@@ -26,7 +26,6 @@
         label { font-size: 0.85rem; color: var(--text-dim); font-weight: 600; }
         .price-tag { font-size: 2.2rem; color: var(--accent); font-weight: 800; text-align: center; margin: 10px 0; }
         .pin-card {
-            /* now part of form flow */
             position: relative;
             width: 100%;
             background: var(--card-bg) url('pin-card.png') center/cover no-repeat;
@@ -43,7 +42,6 @@
             opacity: 1;
             transform: translateY(0) scale(1);
         }
-        /* subtle color differences by amount */
         .pin-card.amount-200 { border: 2px solid #22c55e; }
         .pin-card.amount-500 { border: 2px solid #38bdf8; }
         .pin-card.amount-1000 { border: 2px solid #f59e0b; }
@@ -84,7 +82,6 @@
                         <option value="Result Checker" data-price="1000">₦1,000</option>
                     </select>
                 </div>
-                <!-- virtual PIN card preview -->
                 <div id="virtual-card" class="pin-card hidden">
                     <div class="price-tag" id="display-price">₦0.00</div>
                     <div class="pin-number" id="card-pin">**** **** ****</div>
@@ -94,11 +91,13 @@
                     <select id="p-method" onchange="togglePaymentDetails()">
                         <option value="Bank">Bank Transfer</option>
                         <option value="Vendor">OPay Vendor</option>
+                        <option value="eTranzact">eTranzact</option>
                     </select>
                 </div>
             </div>
             <label>Delivery WhatsApp Number</label>
             <input type="tel" id="p-whatsapp" placeholder="e.g. 08012345678">
+            
             <div id="payment-info" style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 15px;">
                 <div id="bank-ui">
                     <small style="color:var(--text-dim)">GTBank Transfer:</small>
@@ -110,66 +109,34 @@
                     <p style="margin: 5px 0;"><b>8068076333</b></p>
                     <p style="margin:0; font-size: 0.8rem; opacity: 0.7;">Recipient: Godwin</p>
                 </div>
-                <div class="service-item">
-                    <span style="color:#4b44e0">💳</span> <div class="service-info">
-                    <b>eTranzact</b>
-                    <small>Pay via: esther.nwogwu@etranzactng.com</small>
+                <div id="etranzact-ui" class="hidden">
+                    <small style="color:var(--text-dim)">eTranzact Payment:</small>
+                    <p style="margin: 5px 0; color: var(--primary);"><b>esther.nwogwu@etranzactng.com</b></p>
+                    <p style="margin:0; font-size: 0.8rem; opacity: 0.7;">Send payment notification to this email</p>
                 </div>
-    </div>
-</a>
             </div>
+
             <button class="btn-primary" onclick="handleWhatsAppRedirect()">Proceed to WhatsApp Delivery</button>
             <button class="btn-outline" onclick="window.location.href='https://official-gocbt.github.io/pin_purchase/'">Back</button>
         </div>
     </div>
 
     <script>
-        // comprehensive list of senior secondary (SSS) subjects
         const sssSubjects = [
-            'English Language',
-            'General Mathematics',
-            'Citizenship and Heritage Studies',
-            'Digital Technologies',
-            'Biology',
-            'Chemistry',
-            'Physics',
-            'Agricultural Science',
-            'Further Mathematics',
-            'Physical Education',
-            'Health Education',
-            'Foods & Nutrition',
-            'Geography',
-            'Technical Drawing',
-            'Humanities',
-            'Nigerian History',
-            'Government',
-            'Christian Religious Studies (CRS)',
-            'Islamic Studies (IRS)',
-            'One Nigerian Language (Hausa, Igbo, Yoruba, Efik, Ibibio, etc.)',
-            'French',
-            'Arabic',
-            'Visual Arts',
-            'Music',
-            'Literature in English',
-            'Home Management',
-            'Catering Craft',
-            'Business Studies',
-            'Accounting',
-            'Commerce',
-            'Marketing',
-            'Economics',
-            'Programming/AI',
-            'Advanced Languages',
-            'Focused Entrepreneurship'
+            'English Language', 'General Mathematics', 'Citizenship and Heritage Studies',
+            'Digital Technologies', 'Biology', 'Chemistry', 'Physics', 'Agricultural Science',
+            'Further Mathematics', 'Physical Education', 'Health Education', 'Foods & Nutrition',
+            'Geography', 'Technical Drawing', 'Humanities', 'Nigerian History', 'Government',
+            'Christian Religious Studies (CRS)', 'Islamic Studies (IRS)', 'French', 'Arabic',
+            'Visual Arts', 'Music', 'Literature in English', 'Home Management', 'Catering Craft',
+            'Business Studies', 'Accounting', 'Commerce', 'Marketing', 'Economics', 'Programming/AI'
         ];
 
         const classSubjects = {
-            'JSS1': ['RELIGIOUS AND MORAL INSTRUCTIONS', 'COMPUTER STUDY', 'BUSINESS STUDY', 'CULTURAL AND CREATIVE ARTS/MUSIC', 'DIGITAL TECHNOLOGY', 'CIVIC EDUCATION', 'YORUBA LANGUAGE', 'ENGLISH LANGUAGE', 'MATHEMATICS', 'BASIC SCIENCE', 'PREVOCATIONAL STUDIES', 'NATIONAL VALUES EDUCATION', 'PHYSICAL EDUCATION', 'FRENCH', 'CHRISTIAN RELIGIOUS KNOWLEDGE'],
-            'JSS2': ['RELIGIOUS AND MORAL INSTRUCTIONS', 'COMPUTER STUDY', 'BUSINESS STUDY', 'CULTURAL AND CREATIVE ARTS/MUSIC', 'DIGITAL TECHNOLOGY', 'CIVIC EDUCATION', 'YORUBA LANGUAGE', 'ENGLISH LANGUAGE', 'MATHEMATICS', 'BASIC SCIENCE', 'PREVOCATIONAL STUDIES', 'NATIONAL VALUES EDUCATION', 'PHYSICAL EDUCATION', 'FRENCH', 'CHRISTIAN RELIGIOUS KNOWLEDGE'],
-            'JSS3': ['RELIGIOUS AND MORAL INSTRUCTIONS', 'COMPUTER STUDY', 'BUSINESS STUDY', 'CULTURAL AND CREATIVE ARTS/MUSIC', 'DIGITAL TECHNOLOGY', 'CIVIC EDUCATION', 'YORUBA LANGUAGE', 'ENGLISH LANGUAGE', 'MATHEMATICS', 'BASIC SCIENCE', 'PREVOCATIONAL STUDIES', 'NATIONAL VALUES EDUCATION', 'PHYSICAL EDUCATION', 'FRENCH', 'CHRISTIAN RELIGIOUS KNOWLEDGE'],
-            'SSS1': sssSubjects,
-            'SSS2': sssSubjects,
-            'SSS3': sssSubjects
+            'JSS1': ['COMPUTER STUDY', 'BUSINESS STUDY', 'DIGITAL TECHNOLOGY', 'ENGLISH LANGUAGE', 'MATHEMATICS', 'BASIC SCIENCE', 'FRENCH'],
+            'JSS2': ['COMPUTER STUDY', 'BUSINESS STUDY', 'DIGITAL TECHNOLOGY', 'ENGLISH LANGUAGE', 'MATHEMATICS', 'BASIC SCIENCE', 'FRENCH'],
+            'JSS3': ['COMPUTER STUDY', 'BUSINESS STUDY', 'DIGITAL TECHNOLOGY', 'ENGLISH LANGUAGE', 'MATHEMATICS', 'BASIC SCIENCE', 'FRENCH'],
+            'SSS1': sssSubjects, 'SSS2': sssSubjects, 'SSS3': sssSubjects
         };
 
         function updateSubjectsByClass() {
@@ -189,58 +156,34 @@
         const DB = {
             init: () => {
                 if (!localStorage.getItem('nexus_cbt_core')) {
-                    const demoStudents = [];
-                    for (let i = 1; i <= 50; i++) {
-                        demoStudents.push({ id: `STU-2026-${100 + i}`, name: `Student ${i}`, pin: (10000 + i).toString(), status: "ACTIVE" });
-                    }
-                    localStorage.setItem('nexus_cbt_core', JSON.stringify({ students: demoStudents }));
+                    localStorage.setItem('nexus_cbt_core', JSON.stringify({ students: [] }));
                 }
-                const data = JSON.parse(localStorage.getItem('nexus_cbt_core'));
-                console.log('pins in local CMS:', data.students.map(s => s.pin));
-            },
-            get: () => JSON.parse(localStorage.getItem('nexus_cbt_core')),
-            save: (data) => localStorage.setItem('nexus_cbt_core', JSON.stringify(data))
+            }
         };
 
         function updatePurchaseUI() {
             const sel = document.getElementById('p-type');
             const price = parseInt(sel.options[sel.selectedIndex].dataset.price) || 0;
             const disp = document.getElementById('display-price');
-            if (disp) {
-                disp.innerText = `₦${price.toLocaleString()}.00`;
-            }
+            if (disp) disp.innerText = `₦${price.toLocaleString()}.00`;
             updatePinCard();
         }
 
-        // generate a dummy PIN string (3 groups of 4 digits)
         function generateRandomPin() {
-            const parts = [];
-            for (let i = 0; i < 3; i++) {
-                parts.push(Math.floor(1000 + Math.random() * 9000));
-            }
-            return parts.join(' ');
+            return Array.from({length: 3}, () => Math.floor(1000 + Math.random() * 9000)).join(' ');
         }
 
-        // show/hide virtual card and refresh pin when any amount is selected
         function updatePinCard() {
             const sel = document.getElementById('p-type');
             const card = document.getElementById('virtual-card');
             const pinText = document.getElementById('card-pin');
-            if (sel && card) {
-                if (sel.value) {
-                    // reveal card and animate
-                    card.classList.remove('hidden');
-                    card.classList.add('show');
-                    if (pinText) pinText.textContent = generateRandomPin();
-                    // assign amount class for subtle color change
-                    const price = sel.options[sel.selectedIndex].dataset.price;
-                    card.classList.remove('amount-200','amount-500','amount-1000');
-                    if (price) card.classList.add(`amount-${price}`);
-                } else {
-                    // hide card
-                    card.classList.add('hidden');
-                    card.classList.remove('show');
-                }
+            if (sel.value) {
+                card.classList.remove('hidden');
+                setTimeout(() => card.classList.add('show'), 10);
+                pinText.textContent = generateRandomPin();
+            } else {
+                card.classList.add('hidden');
+                card.classList.remove('show');
             }
         }
 
@@ -248,6 +191,7 @@
             const m = document.getElementById('p-method').value;
             document.getElementById('bank-ui').classList.toggle('hidden', m !== 'Bank');
             document.getElementById('vendor-ui').classList.toggle('hidden', m !== 'Vendor');
+            document.getElementById('etranzact-ui').classList.toggle('hidden', m !== 'eTranzact');
         }
 
         function handleWhatsAppRedirect() {
@@ -256,22 +200,15 @@
             const subject = document.getElementById('p-subject').value;
             const pinType = document.getElementById('p-type').value;
             const method = document.getElementById('p-method').value;
-            let amount = parseInt(document.getElementById('p-type').options[document.getElementById('p-type').selectedIndex].dataset.price);
-            if (pinType === 'Study PIN') {
-                amount = document.getElementById('p-study-amt').value;
-            }
-            const message = `Order PIN Request:\nPhone: ${phone}\nSubject: ${subject}\nAmount: ₦${amount}\nPayment Method: ${method}`;
+            const price = document.getElementById('p-type').options[document.getElementById('p-type').selectedIndex].dataset.price;
+            
+            const message = `Order PIN Request:\nPhone: ${phone}\nSubject: ${subject}\nAmount: ₦${price}\nPayment Method: ${method}`;
             window.open(`https://wa.me/2348157505037?text=${encodeURIComponent(message)}`, '_blank');
         }
 
         DB.init();
         updatePurchaseUI();
         togglePaymentDetails();
-        // also refresh card when the amount dropdown is interacted with
-        const pTypeEl = document.getElementById('p-type');
-        if (pTypeEl) {
-            pTypeEl.addEventListener('click', updatePinCard);
-        }
     </script>
 </body>
 </html>
